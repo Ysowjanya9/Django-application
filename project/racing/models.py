@@ -10,6 +10,11 @@ def check_logo_size(img):
     if  img.size > max:
         raise ValidationError("Logo size must be less than or equal to 50KB.")
 
+def check_registration_close_date(date):
+    if date >= date.today():
+        raise ValidationError("Date must be in the past.")
+
+
 class Team(models.Model):
     team_name = models.CharField(max_length=256,unique=True)
     city = models.CharField(max_length=256)
@@ -38,7 +43,7 @@ class Race(models.Model):
    city = models.CharField(max_length=18)
    country = models.CharField(max_length=18)
    race_date = models.DateField(validators=[MinValueValidator(limit_value=date.today())])
-   registration_closure_date = models.DateField(null=True, blank=True)
+   registration_closure_date = models.DateField(validators=[check_registration_close_date],null=True, blank=True)
 
    def __str__(self):
         return self.track_name  
