@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
-import GenericList from './components/GenericList';
+import {GenericList} from './components/GenericList';
 import GenericForm from './components/GenericForm';
 import './App.css';
 

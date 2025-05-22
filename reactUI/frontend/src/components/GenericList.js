@@ -2,17 +2,43 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-const BASE_URL=`http://localhost:8000/racing/api/`;
+const useBaseUrl = () => {
+  const [BASE_URL, setBaseUrl] = useState('');
+
+  useEffect(() => {
+    baseUrl();
+  },[])
+
+  const baseUrl = async () => {
+    try {
+      const ip = await fetch('/backendhost.txt');
+      let host = (await ip.text()).trim();
+      if (!host) {
+        host = window.location.hostname;
+      }
+      const url = `${window.location.protocol}//${host}:8000/racing/api/`;
+      setBaseUrl(url);
+    } catch (err) {
+      const fallback = `${window.location.protocol}//${window.location.hostname}:8000/racing/api`;
+      setBaseUrl(fallback);
+    }
+  };
+  return BASE_URL;
+}
 
 function GenericList({ model }) {
   const [items, setItems] = useState([]);
+  const BASE_URL = useBaseUrl();
+    
+  useEffect(() => {
+    if (!BASE_URL) return;
+    fetchItems();
+  }, [BASE_URL, model]);
+
   const API = {
     list: `${BASE_URL}${model}/`,
     delete: (id) => `${BASE_URL}${model}/delete/${id}/`,
   };
-  useEffect(() => {
-    fetchItems();
-  }, [model]);
 
   const fetchItems = () => {
     axios.get(API.list)
@@ -75,5 +101,5 @@ function GenericList({ model }) {
   );
 }
 
-export default GenericList;
+export {useBaseUrl, GenericList};
  

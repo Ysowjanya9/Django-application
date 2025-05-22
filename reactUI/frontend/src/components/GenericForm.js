@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useBaseUrl } from './GenericList';
 
-const BASE_URL = 'http://localhost:8000/racing/api';
+// const hostname = window.location.hostname;
+// const BASE_URL= `${window.location.protocol}//${hostname}:8000/racing/api/`;
+
 
 const fieldConfig = {
   teams: [
@@ -36,15 +39,18 @@ function GenericForm({ model }) {
   const [drivers, setDrivers] = useState([]);
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const BASE_URL = useBaseUrl();
 
   const API = {
-    create: `${BASE_URL}/${model}/create/`,
-    edit: (id) => `${BASE_URL}/${model}/edit/${id}/`,
+    create: `${BASE_URL}${model}/create/`,
+    edit: (id) => `${BASE_URL}${model}/edit/${id}/`,
   };
 
   useEffect(() => {
+    console.log(BASE_URL);
+    if (!BASE_URL) return;
     fetchData();
-  }, [id, model]);
+  }, [BASE_URL, id, model]);
 
   const fetchData = async () => {
     try {
@@ -97,6 +103,7 @@ function GenericForm({ model }) {
 
     try {
       const method = model === 'teams' ? 'patch' : 'put';
+      console.log(API.edit(id));
       id
         ? await axios[method](API.edit(id), formData)
         : await axios.post(API.create, formData);
